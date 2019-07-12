@@ -4,6 +4,8 @@ import FileDrop from "react-file-drop";
 import "../static/fileDrop.css";
 import MaterialIcon from "material-icons-react";
 import xmlIcon from "../static/xml-icon.png";
+import critickerIcon from "../static/criticker-icon.png";
+import lbIcon from "../static/letterboxd-icon.png";
 
 class Content extends Component {
   constructor(props) {
@@ -28,6 +30,30 @@ class Content extends Component {
           flexDirection: "column"
         }}
       >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontFamily: "Russo One",
+            fontSize: "40px",
+            marginBottom: "20px"
+          }}
+        >
+          <img
+            src={critickerIcon}
+            alt="critickerIcon"
+            width={"50px"}
+            height={"50px"}
+          />
+          <div style={{ padding: "0 10px" }}>CONVERTER</div>
+          <img
+            src={lbIcon}
+            alt="letterboxdIcon"
+            width={"100px"}
+            height={"37px"}
+          />
+        </div>
         <div style={style.fileDrop}>
           <input
             id="contained-button-file"
