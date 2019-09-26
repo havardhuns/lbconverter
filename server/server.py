@@ -1,13 +1,33 @@
-from flask import Flask, request, redirect, url_for, current_app, send_from_directory
+from flask import Flask, request, redirect, url_for, current_app, send_from_directory, jsonify
 from werkzeug import secure_filename
 from flask_cors import CORS
 import os
+from imdb import IMDb
+import json
+import requests
+
+
+
 app = Flask(__name__)
 CORS(app)
 
-
+API_KEY = "52054b86a7c38893bedfad2b6e189d8c"
 UPLOAD_FOLDER = 'tmp/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['API_KEY'] = API_KEY
+
+@app.route('/movies', methods = ['GET'])
+def getMovies():
+    try:
+        response = requests.get('https://api.themoviedb.org/3/movie/popular?api_key=' + API_KEY + '&page=1')
+    except HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')  
+    except Exception as err:
+        print(f'Other error occurred: {err}') 
+    else:
+        print('Success!')
+        wtf = jsonify(json.loads(response.content)["results"])
+        return wtf
 
 
 @app.route('/upload', methods = ['POST'])

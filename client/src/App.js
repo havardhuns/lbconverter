@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Main from "./Main.js";
+import Main from "./Containers/Main.js";
 
 function App() {
   return (
@@ -12,8 +12,7 @@ function App() {
         transform: "translate(-50%, -50%)"
       }}
     >
-      
-      <Main /> 
+      <Main />
     </div>
   );
 }
