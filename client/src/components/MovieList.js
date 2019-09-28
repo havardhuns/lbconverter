@@ -14,13 +14,13 @@ class MovieList extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ width: "80%" }}>
         <Grid container spacing={1}>
           {this.props.movies.map((movie, i) => {
             return (
-              <Grid item xs={2}>
+              <Grid item xs={1} spacing={1}>
                 <div onClick={() => this.clickedMovie(movie)}>
-                  <Movie title={movie.title} year={movie.release_date} />
+                  <Movie movie={movie} />
                 </div>
               </Grid>
             );

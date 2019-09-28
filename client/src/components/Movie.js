@@ -7,16 +7,26 @@ class Movie extends Component {
   }
 
   render() {
+    console.log(this.props.movie.poster_path);
     return (
       <div
         style={{
-          height: "80px",
-          width: "60px",
+          width: "90px",
+          height: "135px",
           backgroundColor: "white",
-          color: "black"
+          color: "black",
+          borderRadius: "5px"
         }}
       >
-        {this.props.title}}
+        <img
+          src={
+            "https://image.tmdb.org/t/p/original/" +
+            this.props.movie.poster_path
+          }
+          alt="lol"
+          width="100%"
+          style={{ borderRadius: "5px" }}
+        />
       </div>
     );
   }
