@@ -1,17 +1,10 @@
 import React from "react";
 import "./App.css";
-import Main from "./Containers/Main.js";
+import Main from "./containers/Main.js";
 
 function App() {
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)"
-      }}
-    >
+    <div>
       <Main />
     </div>
   );

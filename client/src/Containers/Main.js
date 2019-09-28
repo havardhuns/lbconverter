@@ -5,8 +5,6 @@ import MovieDetails from "../components/MovieDetails.js";
 import { connect } from "react-redux";
 import { getMovies } from "../actions/MovieListAction";
 
-const axios = require("axios");
-
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -20,7 +18,7 @@ class Main extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.mvoieList !== this.props.movieList) {
+    if (prevProps.movieList !== this.props.movieList) {
       console.log("endret");
       console.log(this.props.movieList);
     }
@@ -33,18 +31,26 @@ class Main extends Component {
   render() {
     console.log(this.props.movieList.length);
     return (
-      <div>
-        {/*!this.state.movie ? (
-          this.props.movieList.length > 0 ? (
-            <MovieList movies={this.props.movieList} onClick={this.openMovie} />
-          ) : (
-            <div> loading... </div>
-          )
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column"
+        }}
+      >
+        {this.props.movieList.length > 0 ? (
+          <MovieList movies={this.props.movieList} onClick={this.openMovie} />
         ) : (
-          <div> {this.state.movie.title} </div>
-        )*/}
+          <div> loading... </div>
+        )}
+        {this.state.movie && (
+          <MovieDetails
+            movie={this.state.movie}
+            close={() => this.setState({ movie: null })}
+          />
+        )}
 
-        <Content />
+        {/*<Content />*/}
       </div>
     );
   }
