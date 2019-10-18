@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Img from "react-image";
 
 class Movie extends Component {
   constructor(props) {
@@ -7,7 +8,6 @@ class Movie extends Component {
   }
 
   render() {
-    console.log(this.props.movie.poster_path);
     return (
       <div
         style={{
@@ -17,15 +17,16 @@ class Movie extends Component {
           color: "black",
           borderRadius: "5px"
         }}
+        onClick={this.props.onClick}
       >
         <img
           src={
             "https://image.tmdb.org/t/p/original/" +
             this.props.movie.poster_path
           }
-          alt="lol"
           width="100%"
           style={{ borderRadius: "5px" }}
+          alt={this.props.movie.title}
         />
       </div>
     );
