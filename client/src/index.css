@@ -5,13 +5,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-image: linear-gradient(
-    to bottom,
-    #020a16,
-    #0c1a29,
-    #0e273e,
-    #0c3653,
-    #00456a
-  );
+      to bottom,
+      #020a16,
+      #0c1a29,
+      #0e273e,
+      #0c3653,
+      #00456a
+    ),
+    linear-gradient(to top, #020a16, #0c1a29, #0e273e, #0c3653, #00456a);
   height: 100vh;
   color: white;
 }

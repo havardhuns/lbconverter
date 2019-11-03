@@ -4,6 +4,13 @@ import MovieList from "../components/MovieList.js";
 import MovieDetails from "../components/MovieDetails.js";
 import { connect } from "react-redux";
 import { getMovies } from "../actions/MovieListAction";
+import {
+  getMovieDetails,
+  clearMovieDetails
+} from "../actions/MovieDetailsAction";
+import Torrentplayer from "../components/Torrentplayer";
+import SearchField from "../components/SearchField";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Main extends Component {
   constructor(props) {
@@ -14,23 +21,21 @@ class Main extends Component {
   componentDidMount() {
     console.log("mount");
     this.props.getMovies();
-    console.log(this.props.movieList);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.movieList !== this.props.movieList) {
       console.log("endret");
-      console.log(this.props.movieList);
     }
   }
 
   openMovie = movie => {
-    this.setState({ movie: movie });
+    this.props.getMovieDetails(movie);
   };
 
   render() {
-    console.log(this.props.movieList.length);
-    return (
+    console.log(this.props.movieDetails);
+    return !this.props.torrent ? (
       <div
         style={{
           display: "flex",
@@ -38,32 +43,39 @@ class Main extends Component {
           flexDirection: "column"
         }}
       >
+        <SearchField />
         {this.props.movieList.length > 0 ? (
           <MovieList movies={this.props.movieList} onClick={this.openMovie} />
         ) : (
-          <div> loading... </div>
+          <CircularProgress color="white" />
         )}
-        {this.state.movie && (
+        {this.props.movieDetails.id && (
           <MovieDetails
-            movie={this.state.movie}
-            close={() => this.setState({ movie: null })}
+            movie={this.props.movieDetails}
+            close={() => this.props.clearMovieDetails()}
           />
         )}
 
         {/*<Content />*/}
       </div>
+    ) : (
+      <Torrentplayer torrent={this.props.torrent} />
     );
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    getMovies: () => dispatch(getMovies())
+    getMovies: () => dispatch(getMovies()),
+    getMovieDetails: id => dispatch(getMovieDetails(id)),
+    clearMovieDetails: () => dispatch(clearMovieDetails())
   };
 };
 
 const mapStateToProps = state => ({
-  movieList: state.movieList.movieList
+  movieList: state.movieList.movieList,
+  movieDetails: state.movie.movieDetails,
+  torrent: state.torrentList.torrent
 });
 
 export default connect(

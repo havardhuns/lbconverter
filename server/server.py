@@ -5,11 +5,17 @@ import os
 from imdb import IMDb
 import json
 import requests
-
+import pymongo
+from bson.json_util import dumps
 
 
 app = Flask(__name__)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+myclient = pymongo.MongoClient("mongodb+srv://havardhuns:dbpw@cluster0-iimwb.azure.mongodb.net/test?retryWrites=true&w=majority&ssl_cert_reqs=CERT_NONE")
+mydb = myclient["movieFilter"]
+dbList = mydb["movieList"]
 
 API_KEY = "52054b86a7c38893bedfad2b6e189d8c"
 UPLOAD_FOLDER = 'tmp/'
@@ -18,10 +24,16 @@ app.config['API_KEY'] = API_KEY
 
 @app.route('/movies', methods = ['GET'])
 def getMovies():
+    mydoc = list(dbList.find().sort("popularity", -1).limit(60))
+    length = dbList.count()
+    #return mydoc
+    return dumps({"total_results" : length, "results" : mydoc})
+    
+
+'''@app.route('/movies', methods = ['GET'])
+def getMovies():
     page = request.args.get('page', default = 1, type = int)
     pageto = request.args.get('pageto', default = page+1, type = int)
-    print(page)
-    print(pageto)
     movies= []
     for i in range(page, pageto):
         movies.extend(getMoviesFromPage('https://api.themoviedb.org/3/discover/movie?api_key=' + API_KEY + '&sort_by=popularity.desc', i))
@@ -30,18 +42,26 @@ def getMovies():
 def getMoviesFromPage(query, page):
     try:
         response = requests.get(query + "&page=" + str(page))
-    except HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')  
     except Exception as err:
         print(f'Other error occurred: {err}') 
     else:
         print('Success!')
         movies = json.loads(response.content)["results"]
+        keys = ["title", "poster_path", "backdrop_path", "release_date", "id"]
         for i in range(len(movies)):
-            movies[i] = {'title': movies[i]["title"], 'poster_path': movies[i]["poster_path"]}
+            movies[i] = {key: movies[i][key] for key in keys}
         return movies
-            
-        
+
+@app.route('/movie', methods=['GET'])
+def getMovieDetails():
+    movieId = request.args.get('movieid', type= str)
+    print(movieId)
+    try:
+        return requests.get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=' + API_KEY+'&language=en-US').json()
+    except Exception as err:
+        print(f'Other error occurred: {err}')'''
+
+
 
 
 @app.route('/upload', methods = ['POST'])

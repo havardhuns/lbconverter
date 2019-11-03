@@ -19,9 +19,7 @@ class MovieList extends Component {
           {this.props.movies.map((movie, i) => {
             return (
               <Grid item xs={1} spacing={1}>
-                <div onClick={() => this.clickedMovie(movie)}>
-                  <Movie movie={movie} />
-                </div>
+                <Movie movie={movie} onClick={() => this.clickedMovie(movie)} />
               </Grid>
             );
           })}
