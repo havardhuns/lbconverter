@@ -5,11 +5,17 @@ import os
 from imdb import IMDb
 import json
 import requests
-
+import pymongo
+from bson.json_util import dumps
 
 
 app = Flask(__name__)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+myclient = pymongo.MongoClient("mongodb+srv://havardhuns:dbpw@cluster0-iimwb.azure.mongodb.net/test?retryWrites=true&w=majority&ssl_cert_reqs=CERT_NONE")
+mydb = myclient["movieFilter"]
+dbList = mydb["movieList"]
 
 API_KEY = "52054b86a7c38893bedfad2b6e189d8c"
 UPLOAD_FOLDER = 'tmp/'
@@ -17,6 +23,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['API_KEY'] = API_KEY
 
 @app.route('/movies', methods = ['GET'])
+def getMovies():
+    mydoc = list(dbList.find().sort("popularity", -1).limit(60))
+    length = dbList.count()
+    #return mydoc
+    return dumps({"total_results" : length, "results" : mydoc})
+    
+
+'''@app.route('/movies', methods = ['GET'])
 def getMovies():
     page = request.args.get('page', default = 1, type = int)
     pageto = request.args.get('pageto', default = page+1, type = int)
@@ -45,7 +59,9 @@ def getMovieDetails():
     try:
         return requests.get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=' + API_KEY+'&language=en-US').json()
     except Exception as err:
-        print(f'Other error occurred: {err}')
+        print(f'Other error occurred: {err}')'''
+
+
 
 
 @app.route('/upload', methods = ['POST'])

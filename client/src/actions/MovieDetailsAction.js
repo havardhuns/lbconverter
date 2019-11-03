@@ -7,11 +7,9 @@ export const clearMovie = () => ({
   type: "CLEAR_MOVIE"
 });
 
-export function getMovieDetails(id) {
+export function getMovieDetails(movie) {
   return dispatch => {
-    fetch("http://localhost:5000/movie?movieid=" + id)
-      .then(response => response.json(), error => console.log(error))
-      .then(movie => dispatch(setMovie(movie)));
+    dispatch(setMovie(movie));
   };
 }
 

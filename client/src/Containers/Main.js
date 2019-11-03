@@ -8,6 +8,9 @@ import {
   getMovieDetails,
   clearMovieDetails
 } from "../actions/MovieDetailsAction";
+import Torrentplayer from "../components/Torrentplayer";
+import SearchField from "../components/SearchField";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Main extends Component {
   constructor(props) {
@@ -27,12 +30,12 @@ class Main extends Component {
   }
 
   openMovie = movie => {
-    this.props.getMovieDetails(movie.id);
+    this.props.getMovieDetails(movie);
   };
 
   render() {
     console.log(this.props.movieDetails);
-    return (
+    return !this.props.torrent ? (
       <div
         style={{
           display: "flex",
@@ -40,10 +43,11 @@ class Main extends Component {
           flexDirection: "column"
         }}
       >
+        <SearchField />
         {this.props.movieList.length > 0 ? (
           <MovieList movies={this.props.movieList} onClick={this.openMovie} />
         ) : (
-          <div> loading... </div>
+          <CircularProgress color="white" />
         )}
         {this.props.movieDetails.id && (
           <MovieDetails
@@ -54,6 +58,8 @@ class Main extends Component {
 
         {/*<Content />*/}
       </div>
+    ) : (
+      <Torrentplayer torrent={this.props.torrent} />
     );
   }
 }
@@ -68,7 +74,8 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => ({
   movieList: state.movieList.movieList,
-  movieDetails: state.movie.movieDetails
+  movieDetails: state.movie.movieDetails,
+  torrent: state.torrentList.torrent
 });
 
 export default connect(
