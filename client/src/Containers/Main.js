@@ -4,6 +4,10 @@ import MovieList from "../components/MovieList.js";
 import MovieDetails from "../components/MovieDetails.js";
 import { connect } from "react-redux";
 import { getMovies } from "../actions/MovieListAction";
+import {
+  getMovieDetails,
+  clearMovieDetails
+} from "../actions/MovieDetailsAction";
 
 class Main extends Component {
   constructor(props) {
@@ -14,22 +18,20 @@ class Main extends Component {
   componentDidMount() {
     console.log("mount");
     this.props.getMovies();
-    console.log(this.props.movieList);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.movieList !== this.props.movieList) {
       console.log("endret");
-      console.log(this.props.movieList);
     }
   }
 
   openMovie = movie => {
-    this.setState({ movie: movie });
+    this.props.getMovieDetails(movie.id);
   };
 
   render() {
-    console.log(this.props.movieList.length);
+    console.log(this.props.movieDetails);
     return (
       <div
         style={{
@@ -43,10 +45,10 @@ class Main extends Component {
         ) : (
           <div> loading... </div>
         )}
-        {this.state.movie && (
+        {this.props.movieDetails.id && (
           <MovieDetails
-            movie={this.state.movie}
-            close={() => this.setState({ movie: null })}
+            movie={this.props.movieDetails}
+            close={() => this.props.clearMovieDetails()}
           />
         )}
 
@@ -58,12 +60,15 @@ class Main extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getMovies: () => dispatch(getMovies())
+    getMovies: () => dispatch(getMovies()),
+    getMovieDetails: id => dispatch(getMovieDetails(id)),
+    clearMovieDetails: () => dispatch(clearMovieDetails())
   };
 };
 
 const mapStateToProps = state => ({
-  movieList: state.movieList.movieList
+  movieList: state.movieList.movieList,
+  movieDetails: state.movie.movieDetails
 });
 
 export default connect(
