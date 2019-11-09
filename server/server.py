@@ -7,6 +7,8 @@ import json
 import requests
 import pymongo
 from bson.json_util import dumps
+from math import ceil
+
 
 
 app = Flask(__name__)
@@ -24,10 +26,32 @@ app.config['API_KEY'] = API_KEY
 
 @app.route('/movies', methods = ['GET'])
 def getMovies():
-    mydoc = list(dbList.find().sort("popularity", -1).limit(60))
+    page = 2
     length = dbList.count()
+    skip, numberOfPages = getPage(page, length)
+    moviesFromDB = list(dbList.find().sort("popularity", -1).limit(60).skip(skip))
+    return dumps({"total_results" : length, "total_pages": numberOfPages, "results" : moviesFromDB})
+    
+@app.route('/movies/search', methods = ['GET'])
+def searchMovies():
+    searchString = request.args.get('search_string', default = "", type = str).strip("\"")
+    limit = int(request.args.get('limit', default = "60", type = str))
+    page = 2
+    length = dbList.count({"title":  {"$regex": searchString}})
+    skip, numberOfPages = getPage(page, length)
+    print(skip)
+    mydoc = list(dbList.find({"title":  {"$regex": searchString, '$options' : 'i'}}).sort("popularity", -1).limit(limit))
+    return dumps({"total_results" : length, "total_pages": numberOfPages, "results" : mydoc})
+    #length = dbList.count()
     #return mydoc
-    return dumps({"total_results" : length, "results" : mydoc})
+    #return dumps({"total_results" : length, "results" : mydoc})
+
+
+def getPage(page, movieListLength):
+    skip = 60*(page-1)
+    numberOfPages = ceil(movieListLength/60)
+    return (skip, numberOfPages)
+
     
 
 '''@app.route('/movies', methods = ['GET'])

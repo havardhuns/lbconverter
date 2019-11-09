@@ -15,7 +15,8 @@ class Movie extends Component {
           height: "135px",
           backgroundColor: "white",
           color: "black",
-          borderRadius: "5px"
+          borderRadius: "7px",
+          border: "2px solid rgb(50,50,50)"
         }}
         onClick={this.props.onClick}
       >
