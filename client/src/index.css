@@ -1,4 +1,8 @@
 body {
+  height: 100%;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   margin: 0;
   font-family: "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
@@ -13,11 +17,14 @@ body {
       #00456a
     ),
     linear-gradient(to top, #020a16, #0c1a29, #0e273e, #0c3653, #00456a);
-  height: 100vh;
   color: white;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+html {
+  height: 100%;
 }
