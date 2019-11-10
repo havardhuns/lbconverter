@@ -10,7 +10,7 @@ export const setSearchSuggestion = movieList => ({
 
 export function getMovies() {
   return dispatch => {
-    fetch("http://localhost:5000/movies")
+    fetch("http://localhost:5000/movies?page=1")
       .then(response => response.json(), error => console.log(error))
       .then(movieList => {
         dispatch(setMovies(movieList));
@@ -41,6 +41,6 @@ export function getSearchSuggestions(searchString) {
 
 export function clearSearchSuggestions() {
   return dispatch => {
-    dispatch(setSearchSuggestion([]));
+    dispatch(setSearchSuggestion(["tom"]));
   };
 }

@@ -78,11 +78,11 @@ def getMovieFromID(id):
 
 for year in range(2019, 1849, -1): #1873
 	instertedFromYear = 0
+	pagebreak = 3
 	pages = requestWithRetry("https://api.themoviedb.org/3/discover/movie?api_key=52054b86a7c38893bedfad2b6e189d8c&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&primary_release_year=" + str(year))["total_pages"]
 	if pages > 10:
 		pages = 50
 	for page in range(1,pages+1):
-		print ("\n\n\n----- Inserting movies from", year, ", page: ", page,"------")
 		movies = requestWithRetry("https://api.themoviedb.org/3/discover/movie?api_key=52054b86a7c38893bedfad2b6e189d8c&language=en-US&sort_by=popularity.desc&page=" + str(page) + "&primary_release_year=" + str(year))["results"]
 		jsonFilmer = []
 		for movie in movies:
@@ -105,5 +105,9 @@ for year in range(2019, 1849, -1): #1873
 				print("Error inserting movies from", year, ", page", page, " - Skipping for now. ")
 				print("Pages not inserted:", pagesNotInserted)
 				continue
+		else:
+    			pagebreak = 0
+		print ("\n"*pagebreak+"------------------------ Inserting movies from", year, ", page: ", page, " ------------------------")
+
 	print("\n!-------------------\nInserted", instertedFromYear, "movies from", year, "-", insertedAmount, "total this execution\n-------------------!\n")
 print("Inserted", insertedAmount, "movies :)")

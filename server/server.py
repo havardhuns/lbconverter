@@ -26,10 +26,12 @@ app.config['API_KEY'] = API_KEY
 
 @app.route('/movies', methods = ['GET'])
 def getMovies():
-    page = 2
-    length = dbList.count()
-    skip, numberOfPages = getPage(page, length)
-    moviesFromDB = list(dbList.find().sort("popularity", -1).limit(60).skip(skip))
+    page = request.args.get('page', default = 1, type = int)
+    page_size = request.args.get('page_size', default = 60, type = int)
+    year = request.args.get('year', default = 2014, type = int)
+    length = dbList.count({"release_date":  {"$regex": str(year)}})
+    skip, numberOfPages = getPage(page, length, page_size)
+    moviesFromDB = list(dbList.find({"release_date":  {"$regex": str(year)}}).sort("popularity", -1).limit(page_size).skip(skip))
     return dumps({"total_results" : length, "total_pages": numberOfPages, "results" : moviesFromDB})
     
 @app.route('/movies/search', methods = ['GET'])
@@ -38,7 +40,7 @@ def searchMovies():
     limit = int(request.args.get('limit', default = "60", type = str))
     page = 2
     length = dbList.count({"title":  {"$regex": searchString}})
-    skip, numberOfPages = getPage(page, length)
+    skip, numberOfPages = getPage(page, length, 60)
     print(skip)
     mydoc = list(dbList.find({"title":  {"$regex": searchString, '$options' : 'i'}}).sort("popularity", -1).limit(limit))
     return dumps({"total_results" : length, "total_pages": numberOfPages, "results" : mydoc})
@@ -47,8 +49,8 @@ def searchMovies():
     #return dumps({"total_results" : length, "results" : mydoc})
 
 
-def getPage(page, movieListLength):
-    skip = 60*(page-1)
+def getPage(page, movieListLength, page_size):
+    skip = page_size*(page-1)
     numberOfPages = ceil(movieListLength/60)
     return (skip, numberOfPages)
 

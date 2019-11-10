@@ -5,6 +5,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import { withStyles, fade } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import MaterialIcon from "material-icons-react";
+import update from "immutability-helper";
 
 const SearchField = withStyles(theme => ({
   input: {
@@ -26,7 +27,11 @@ const SearchField = withStyles(theme => ({
 class MovieList extends Component {
   constructor(props) {
     super(props);
-    this.state = { currentTextInput: "", hoverIndex: -1 };
+    this.state = {
+      currentTextInput: "",
+      hoverIndex: -1,
+      loadedImages: 0
+    };
   }
   search = () => {
     this.props.clearSearchSuggestions();
@@ -53,7 +58,7 @@ class MovieList extends Component {
   };
 
   render() {
-    console.log(this.props.searchSuggestions.length);
+    console.log(this.state.loadedImages);
     var searchSuggestions = this.props.searchSuggestions;
     return (
       <div style={{ width: "100%" }}>
@@ -155,6 +160,11 @@ class MovieList extends Component {
                         "https://image.tmdb.org/t/p/original/" +
                         movie.poster_path
                       }
+                      onLoad={() =>
+                        this.setState(prevState => {
+                          return { lodadedImages: prevState.loadedImages + 1 };
+                        })
+                      }
                       height="75px"
                       style={{ padding: "5px" }}
                       alt={movie.title}
@@ -168,7 +178,9 @@ class MovieList extends Component {
                           width: "250px"
                         }}
                       >
-                        <h7>{"Director Name"}</h7>
+                        <h7>
+                          {"Director Name" + i * searchSuggestions.length}
+                        </h7>
                         <br />
                         <h10>{"actor1, actor2, actor 3"}</h10>
                       </div>
