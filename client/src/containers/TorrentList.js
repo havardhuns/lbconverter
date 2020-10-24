@@ -34,9 +34,11 @@ class TorrentList extends Component {
   };
 
   render() {
+    console.log(this.props.torrentList)
     return (
       this.props.torrentList.length > 0 && (
         <div>
+          <h4>Torrents:</h4>
           {this.props.torrentList.map(torrent => (
             <div>
               {"Seeders: " +
@@ -49,7 +51,7 @@ class TorrentList extends Component {
                 icon="play_circle_outline"
                 color="white"
                 size="small"
-                onClick={() => this.props.setTorrent(torrent.download)}
+                onClick={() => window.open(torrent.download, "_blank")}
               />
             </div>
           ))}

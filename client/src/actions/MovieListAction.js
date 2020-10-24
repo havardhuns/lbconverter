@@ -8,9 +8,9 @@ export const setSearchSuggestion = movieList => ({
   payload: movieList
 });
 
-export function getMovies() {
+export function getMovies(page, hideWatched, filter = {}) {
   return dispatch => {
-    fetch("http://localhost:5000/movies")
+    fetch("http://localhost:5000/movies?page=" + page + "&sort=rating" + (hideWatched ? "&lbfilter": "") + "&filter=" + JSON.stringify(filter))
       .then(response => response.json(), error => console.log(error))
       .then(movieList => {
         dispatch(setMovies(movieList));

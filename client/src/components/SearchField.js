@@ -30,7 +30,11 @@ class MovieList extends Component {
   }
   search = () => {
     this.props.clearSearchSuggestions();
-    this.props.search(this.state.currentTextInput);
+    if (this.state.currentTextInput !== "") {
+      this.props.search(this.state.currentTextInput);
+    } else {
+      this.props.getMovies()
+    }
   };
 
   clickedMovie = movie => {
@@ -77,9 +81,9 @@ class MovieList extends Component {
               style={{
                 position: "absolute",
                 right: "20px",
-                top: "37px",
+                top: "20px",
                 zIndex: "1",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
             >
               <MaterialIcon
@@ -89,9 +93,6 @@ class MovieList extends Component {
                 onClick={() => this.search}
               />
             </div>
-            <InputLabel htmlFor="component-outlined">
-              Search for movie...
-            </InputLabel>
             <SearchField
               id="search"
               fullWidth
@@ -123,7 +124,7 @@ class MovieList extends Component {
             {searchSuggestions.length > 0 && (
               <div style={{ marginTop: "40px", zIndex: "1" }} />
             )}
-            <div style={{ position: "relative", zIndex: "3", top: "-20px" }}>
+            <div style={{ position: "relative", zIndex: "3", top: "-5px" }}>
               {searchSuggestions.map((movie, i) => {
                 return (
                   <div
@@ -147,7 +148,8 @@ class MovieList extends Component {
                           : "1px solid grey",
                       display: "flex",
                       cursor: "pointer",
-                      zIndex: 4
+                      zIndex: 4,
+                      backgroundColor: "#0c3653",
                     }}
                   >
                     <img
@@ -159,18 +161,19 @@ class MovieList extends Component {
                       style={{ padding: "5px" }}
                       alt={movie.title}
                     />
-                    <div style={{ padding: "5px", position: "relative" }}>
+                    <div style={{ padding: "5px", position: "relative", width: "80%"}}>
                       <h4 style={{ margin: 0 }}>{movie.title}</h4>
                       <div
                         style={{
                           position: "absolute",
-                          bottom: "7px",
-                          width: "250px"
+                          bottom: "7px"
                         }}
                       >
-                        <h7>{"Director Name"}</h7>
+                        <h7>{movie.director.map((name, i) => " " + name + (i < movie.director.length -1 ? ",": ""))}</h7>
                         <br />
-                        <h10>{"actor1, actor2, actor 3"}</h10>
+                        <br/>
+                        <h12>{movie.cast.map((name, i) => " " + name + (i < movie.cast.length -1 ? ",": ""))}</h12>
+
                       </div>
                     </div>
                   </div>

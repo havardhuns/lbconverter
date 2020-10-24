@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, url_for, current_app, send_from_directory, jsonify
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from flask_cors import CORS
 import os
 from imdb import IMDb
@@ -8,6 +8,7 @@ import requests
 import pymongo
 from bson.json_util import dumps
 from math import ceil
+import sys
 
 
 
@@ -18,19 +19,34 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 myclient = pymongo.MongoClient("mongodb+srv://havardhuns:dbpw@cluster0-iimwb.azure.mongodb.net/test?retryWrites=true&w=majority&ssl_cert_reqs=CERT_NONE")
 mydb = myclient["movieFilter"]
 dbList = mydb["movieList"]
+dbLbData = mydb["lbData"]
+dbGenres = mydb["genres"]
+dbCompanies = mydb["companies"]
 
 API_KEY = "52054b86a7c38893bedfad2b6e189d8c"
 UPLOAD_FOLDER = 'tmp/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['API_KEY'] = API_KEY
 
+
 @app.route('/movies', methods = ['GET'])
 def getMovies():
-    page = 2
-    length = dbList.count()
+    page = int(request.args.get('page', default=1))
+    lbFilter = request.args.get('lbfilter')
+    sort = request.args.get('sort', default="popularity")
+    filter = json.loads(request.args.get('filter', default="{}"))
+
+    print(sort)
+    query = {"status": "Released"}
+    query.update(filter)
+    if lbFilter is not None:
+        filterList = list(dbLbData.find())[0]["titles"]
+        query["title"] = { "$nin": filterList }
+    print(query)
+    length = dbList.count(query)
     skip, numberOfPages = getPage(page, length)
-    moviesFromDB = list(dbList.find().sort("popularity", -1).limit(60).skip(skip))
-    return dumps({"total_results" : length, "total_pages": numberOfPages, "results" : moviesFromDB})
+    moviesFromDB = list(dbList.find(query).sort(sort, -1).limit(60).skip(skip))
+    return dumps({"total_results" : length, "page": page, "total_pages": numberOfPages, "results" : moviesFromDB})
     
 @app.route('/movies/search', methods = ['GET'])
 def searchMovies():
@@ -52,7 +68,62 @@ def getPage(page, movieListLength):
     numberOfPages = ceil(movieListLength/60)
     return (skip, numberOfPages)
 
-    
+
+
+@app.route('/upload', methods = ['POST'])
+def upload_file_return_data():
+    dbLbData.delete_many({})
+    file = request.files["file"]
+    movieTitles = {"titles": []}
+    for line in file:
+        movieTitles["titles"].append(str(line).split(",")[1].strip('"'))
+    print(movieTitles)
+    dbLbData.insert_one((movieTitles))
+    return "lol"
+
+@app.route('/download/<filename>', methods = ['GET'])
+def download(filename):
+    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
+    return send_from_directory(directory=uploads, filename=filename, as_attachment=True)
+
+@app.route('/clearlb', methods= ['POST'])
+def clearLb():
+    dbLbData.delete_many({})
+    return "deleted"
+
+
+@app.route('/lbmovies', methods = ['GET'])
+def getLbMovies():
+    try:
+        return json.dumps(list(dbLbData.find())[0]["titles"])
+    except:
+        return json.dumps([])
+   
+
+@app.route('/genres', methods = ['GET'])
+def getGenres():
+    genresFromDb = list(dbGenres.find())
+    for genre in genresFromDb:
+        genre["value"] = str(genre.pop("_id"))
+    return dumps(genresFromDb)
+
+@app.route('/companydata', methods = ['GET'])
+def getProductionCompaniesData():
+    allMovies = dbList.find()
+    productionCompanies = []
+    for movie in allMovies:
+        for prodComp in movie["production_companies"]:
+            company = {key: prodComp[key] for key in ["id", "name"]}
+            if company not in productionCompanies:
+                productionCompanies.append(company)
+    return dumps(productionCompanies)
+
+@app.route('/company', methods = ['GET'])
+def getProductionCompaniesFromDb():
+    prodCompFromDb = list(dbCompanies.find())
+    for company in prodCompFromDb:
+        company["value"] = str(company.pop("_id"))
+    return dumps(prodCompFromDb)
 
 '''@app.route('/movies', methods = ['GET'])
 def getMovies():
@@ -85,23 +156,3 @@ def getMovieDetails():
     except Exception as err:
         print(f'Other error occurred: {err}')'''
 
-
-
-
-@app.route('/upload', methods = ['POST'])
-def upload_file_return_data():
-    file = request.files["file"]
-    '''with open(app.config['UPLOAD_FOLDER'] + "test.txt", "w") as fo:
-        fo.write("This is Test Data")'''
-    #file_contents = file.stream.read().decode("utf-8")
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return {"filename": filename, "min": 10, "max" : 100, "amount": 546}
-
-
-#@app.route('/convert/<filename>', methods= [''])
-
-@app.route('/download/<filename>', methods = ['GET'])
-def download(filename):
-    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
-    return send_from_directory(directory=uploads, filename=filename, as_attachment=True)

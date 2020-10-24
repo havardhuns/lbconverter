@@ -1,5 +1,5 @@
 const initialState = {
-  movieList: [],
+  movieList: null,
   searchSuggestions: [],
   numberOfPages: 0
 };

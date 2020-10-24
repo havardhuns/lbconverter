@@ -18,12 +18,12 @@ class Content extends Component {
     this.setState({ file: file });
   };
 
-  handleDrop = (file: FileList, event) => {
+  handleDrop = (file, event) => {
     event.preventDefault();
     this.setState({ file: file[0] });
   };
 
-  convert = () => {
+  upload = () => {
     const formData = new FormData();
     formData.append("file", this.state.file);
     axios
@@ -31,6 +31,8 @@ class Content extends Component {
       .then(res => {
         console.log(res.data);
         this.setState({ movieData: res.data });
+        this.props.viewUploader(false)
+        this.props.getLbMovies()
       })
       .catch(err => console.warn(err));
   };
@@ -51,6 +53,12 @@ class Content extends Component {
           flexDirection: "column"
         }}
       >
+        <div style={{position: 'absolute', left: 40, top: 30, cursor: 'pointer', width: 158, padding: 10, borderRadius: 5, border: '2px solid white'}} onClick={() => this.props.viewUploader(false)}>
+        <MaterialIcon icon="arrow_back_ios" color="white" size="large" /> 
+        <div style={{position: 'absolute', width: 150, top: 24, left: 35}}>
+          Back to front page
+        </div>
+        </div>
         <Logo />
         <div style={style.fileDrop}>
           <input
@@ -58,19 +66,19 @@ class Content extends Component {
             type="file"
             onChange={file => this.handleFileChange(file.target.files[0])}
             style={{ display: "none" }}
-            disabled={this.state.file}
+            disabled={this.state.file || this.props.existing}
             key={this.state.key}
           />
           <label htmlFor="contained-button-file">
             <FileDrop
               onDrop={this.handleDrop}
-              className={!this.state.file ? "file-drop-no-click" : "file-drop"}
+              className={!this.state.file   ? "file-drop-no-click" : "file-drop"}
             >
               <div style={style.center}>
-                {!this.state.file ? (
+                {!(this.state.file || this.props.existing) ? (
                   <div style={style.fileDropContent}>
                     <MaterialIcon icon="note_add" color="white" size="large" />
-                    Drop file here or click to upload
+                    Drop your 'watched.csv' file from letterboxd here or click to upload
                   </div>
                 ) : (
                   <div style={style.fileDropContent}>
@@ -80,15 +88,17 @@ class Content extends Component {
                       })}
                       onMouseEnter={() => this.setState({ hoverClose: true })}
                       onMouseLeave={() => this.setState({ hoverClose: false })}
-                      onClick={() =>
+                      onClick={() => {
+                        this.props.deleteLbData()
                         setTimeout(() => {
                           this.setState({
                             file: null,
                             hoverClose: false,
                             key: this.state.key + 1
                           });
+
                         }, 1)
-                      }
+                      }}
                     >
                       <MaterialIcon icon="close" color={"white"} size={24} />
                     </div>
@@ -111,7 +121,7 @@ class Content extends Component {
                         transition: "0.5s"
                       }}
                     >
-                      {this.state.file.name}
+                      {this.state.file ? this.state.file.name : "watched.csv"}
                     </div>
                   </div>
                 )}
@@ -120,22 +130,14 @@ class Content extends Component {
           </label>
         </div>
         <div style={style.buttons}>
-          <Button text="HELP" onClick={this.download} />
+          <Button text="HELP" onClick={this.download}/>
+          <div style={{width: '150px', height: '20px'}}/>
           <Button
-            text="CONVERT"
+            text="UPLOAD"
             disabled={!this.state.file}
-            onClick={this.convert}
+            onClick={this.upload}
           />
         </div>
-        <ConvertDialog
-          open={this.state.movieData}
-          exit={() =>
-            this.setState({
-              file: null,
-              movieData: 1
-            })
-          }
-        />
       </div>
     );
   }
@@ -164,7 +166,7 @@ const style = {
   buttons: {
     margin: "50px",
     display: "flex",
-    justifyContent: "space-around"
+    justifyContent: "center"
   },
   cancel: {
     cursor: "pointer",

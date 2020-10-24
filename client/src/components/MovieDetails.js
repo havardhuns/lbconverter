@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Modal from "@material-ui/core/Modal";
-import TorrentList from "../containers/TorrentList";
+import TorrentList from "../Containers/TorrentList.js"
 
 class MovieDetails extends Component {
   constructor(props) {
@@ -59,8 +59,8 @@ class MovieDetails extends Component {
                 <div style={{ overflow: "scroll", padding: "5px" }}>
                   <h1>{this.props.movie.title}</h1>
                   <h3>
-                    {this.props.movie.release_date.substring(0, 4)} Directed by
-                    Random Navn
+                    {this.props.movie.release_date.substring(0, 4)} Directed by 
+                    {this.props.movie.director.map((name, i) => " " + name + (i < this.props.movie.director.length -1 ? ",": ""))}
                   </h3>
                   <h3 style={{ color: "white" }}>{this.props.movie.tagline}</h3>
                   <h3>{this.props.movie.overview}</h3>

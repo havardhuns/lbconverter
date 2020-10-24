@@ -21,7 +21,7 @@ class Logo extends Component {
           width={"50px"}
           height={"50px"}
         />
-        <div style={{ padding: "0 10px" }}>CONVERTER</div>
+        <div style={{ padding: "0 10px" }}>UPLOADER</div>
         <img
           src={lbIcon}
           alt="letterboxdIcon"

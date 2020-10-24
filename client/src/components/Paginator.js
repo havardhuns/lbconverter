@@ -13,7 +13,6 @@ class Paginator extends Component {
     console.log(this.props.pages);
     return (
       <div>
-        123
         {this.props.pages}
       </div>
     );
