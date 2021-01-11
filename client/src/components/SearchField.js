@@ -81,7 +81,7 @@ class MovieList extends Component {
               style={{
                 position: "absolute",
                 right: "20px",
-                top: "20px",
+                top: "17px",
                 zIndex: "1",
                 cursor: "pointer",
               }}
