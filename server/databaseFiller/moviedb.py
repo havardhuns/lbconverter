@@ -3,17 +3,12 @@ import requests
 import pymongo
 from imdb import IMDb
 
-
-
-
 imdb = IMDb()
-myclient = pymongo.MongoClient("mongodb+srv://havardhuns:dbpw@cluster0-iimwb.azure.mongodb.net/test?retryWrites=true&w=majority&ssl_cert_reqs=CERT_NONE")
-mydb = myclient["movieFilter"]
-dbList = mydb["movieList"]
-dbGenres = mydb["genres"]
-dbCompanies = mydb["companies"]
-
-
+client = pymongo.MongoClient(os.environ.get("DB_CONNECTION"))
+db = client["movieFilter"]
+dbList = db["movieList"]
+dbGenres = db["genres"]
+dbCompanies = db["companies"]
 
 addedMoviesFile = open("addedMovies.txt", "r+")
 addedMoviesListFromFile = addedMoviesFile.read().splitlines()
@@ -154,12 +149,15 @@ def insertProductionCompanies():
 	productionCompanies = requests.get('http://localhost:5000/companydata').json()
 	for company in productionCompanies:
 		company["_id"] = company.pop("id")
-	dbCompanies.insert_many(productionCompanies)
+	try:
+		dbCompanies.insert_many(productionCompanies, ordered=False, bypass_document_validation=True)
+	except pymongo.errors.BulkWriteError as e:
+  		print(e.details['writeErrors'])
 
 
 #clearDatabase()
 #dbGenres.delete_many({})
 #insertGenres()
 #dbCompanies.delete_many({})
-insertMovies(1849, 2020)
-#insertProductionCompanies()
+#insertMovies(1849, 2020)
+insertProductionCompanies()
