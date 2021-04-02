@@ -152,7 +152,11 @@ def insertProductionCompanies():
 	try:
 		dbCompanies.insert_many(productionCompanies, ordered=False, bypass_document_validation=True)
 	except pymongo.errors.BulkWriteError as e:
-  		print(e.details['writeErrors'])
+		panic_list = list(filter(lambda x: x['code'] != 11000, e.details['writeErrors']))
+		if len(panic_list) > 0:
+			print(f"these are not duplicate errors {panic_list}")
+
+
 
 
 #clearDatabase()
