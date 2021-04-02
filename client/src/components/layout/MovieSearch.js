@@ -10,6 +10,7 @@ import {
 } from "../../store/actions/MovieListAction";
 import { useSelector, useDispatch } from "react-redux";
 import { getMovieDetails } from "../../store/actions/MovieDetailsAction";
+import OutsideClickHandler from "react-outside-click-handler";
 
 const SearchField = withStyles((theme) => ({
   input: {
@@ -67,131 +68,148 @@ const MovieSearch = () => {
     }
   };
 
+  MovieSearch.handleClickOutside = () => console.log("outside");
+
   return (
-    <div style={{ width: "100%", position: "relative" }}>
-      <div
-        style={{
-          position: "relative",
-          zIndex: "2",
-        }}
-      >
+    <OutsideClickHandler
+      onOutsideClick={() => {
+        if (searchSuggestions.length > 0) {
+          dispatch(clearSearchSuggestions());
+        }
+      }}
+    >
+      <div style={{ width: "100%", position: "relative" }}>
         <div
-          onClick={() => getMoviesFromInput()}
           style={{
-            position: "absolute",
-            right: "20px",
-            top: "17px",
-            zIndex: "1",
-            cursor: "pointer",
+            position: "relative",
+            zIndex: "2",
           }}
         >
-          <MaterialIcon
-            icon="search"
-            color="white"
-            size="medium"
+          <div
             onClick={() => getMoviesFromInput()}
+            style={{
+              position: "absolute",
+              right: "20px",
+              top: "17px",
+              zIndex: "1",
+              cursor: "pointer",
+            }}
+          >
+            <MaterialIcon
+              icon="search"
+              color="white"
+              size="medium"
+              onClick={() => getMoviesFromInput()}
+            />
+          </div>
+          <SearchField
+            id="search"
+            fullWidth
+            onChange={(event) => onTextInput(event)}
+            onKeyDown={keyPress}
+            onClick={() => dispatch(getSearchSuggestions(currentTextInput))}
+            autoComplete="off"
           />
         </div>
-        <SearchField
-          id="search"
-          fullWidth
-          onChange={(event) => onTextInput(event)}
-          onKeyDown={keyPress}
-          onClick={() => dispatch(getSearchSuggestions(currentTextInput))}
-        />
-      </div>
-      {currentTextInput.length > 0 && (
-        <div
-          onMouseLeave={() => setHoverIndex(-1)}
-          style={{
-            width: "100%",
-            maxHeight: "537px",
-            backgroundColor: "#0c3653",
-            position: "absolute",
-            top: "34px",
-            borderRadius: "0px 0px 5px 5px",
-            display: "flex",
-            flexDirection: "column",
-            color: "white",
-            border: "1px solid rgba(255,255,255,0.1)",
-            boxSizing: "border-box",
-            zIndex: 1,
-          }}
-        >
-          {searchSuggestions.length > 0 && (
-            <div style={{ marginTop: "40px", zIndex: "1" }} />
-          )}
-          <div style={{ position: "relative", zIndex: "3", top: "-5px" }}>
-            {searchSuggestions.map((movie, i) => {
-              return (
-                <div
-                  onMouseEnter={() => setHoverIndex(i)}
-                  onClick={() => {
-                    dispatch(getMovieDetails(movie));
-                    dispatch(clearSearchSuggestions());
-                  }}
-                  style={{
-                    border:
-                      hoverIndex === i ? "1px solid rgb(200,200,200)" : "none",
-                    borderTop:
-                      (hoverIndex === i - 1 && hoverIndex > 0) || i === 0
-                        ? "0px"
-                        : hoverIndex === i
-                        ? "1px solid rgb(200,200,200)"
-                        : "1px solid grey",
-                    display: "flex",
-                    cursor: "pointer",
-                    zIndex: 4,
-                    backgroundColor: "#0c3653",
-                  }}
-                >
-                  <img
-                    src={
-                      "https://image.tmdb.org/t/p/original/" + movie.poster_path
-                    }
-                    height="75px"
-                    style={{ padding: "5px" }}
-                    alt={movie.title}
-                  />
+        {currentTextInput.length > 0 && (
+          <div
+            onMouseLeave={() => setHoverIndex(-1)}
+            style={{
+              width: "100%",
+              maxHeight: "590px",
+              backgroundColor: "#0c3653",
+              position: "absolute",
+              top: "34px",
+              borderRadius: "0px 0px 5px 5px",
+              display: "flex",
+              flexDirection: "column",
+              color: "white",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxSizing: "border-box",
+              zIndex: 1,
+            }}
+          >
+            {searchSuggestions.length > 0 && (
+              <div style={{ marginTop: "40px", zIndex: "1" }} />
+            )}
+            <div style={{ position: "relative", zIndex: "3", top: "-5px" }}>
+              {searchSuggestions.map((movie, i) => {
+                return (
                   <div
+                    onMouseEnter={() => setHoverIndex(i)}
+                    onClick={() => {
+                      dispatch(getMovieDetails(movie));
+                      dispatch(clearSearchSuggestions());
+                    }}
                     style={{
-                      padding: "5px",
-                      position: "relative",
-                      width: "80%",
+                      border:
+                        hoverIndex === i
+                          ? "1px solid rgb(200,200,200)"
+                          : "none",
+                      borderTop:
+                        (hoverIndex === i - 1 && hoverIndex > 0) || i === 0
+                          ? "0px"
+                          : hoverIndex === i
+                          ? "1px solid rgb(200,200,200)"
+                          : "1px solid grey",
+                      display: "flex",
+                      cursor: "pointer",
+                      zIndex: 4,
+                      backgroundColor: "#0c3653",
+                      boxSizing: "border-box",
                     }}
                   >
-                    <h4 style={{ margin: 0 }}>{movie.title}</h4>
+                    <img
+                      src={
+                        "https://image.tmdb.org/t/p/original/" +
+                        movie.poster_path
+                      }
+                      height="75px"
+                      style={{ padding: "5px" }}
+                      alt={movie.title}
+                    />
                     <div
                       style={{
-                        position: "absolute",
-                        bottom: "7px",
+                        padding: "5px",
+                        position: "relative",
+                        width: "80%",
                       }}
                     >
-                      <h7>
-                        {movie.director.map(
-                          (name, i) =>
-                            " " +
-                            name +
-                            (i < movie.director.length - 1 ? "," : "")
-                        )}
-                      </h7>
-                      <br />
-                      <br />
-                      <h12>
-                        {movie.cast.map(
-                          (name, i) =>
-                            " " + name + (i < movie.cast.length - 1 ? "," : "")
-                        )}
-                      </h12>
+                      <h4 style={{ margin: 0 }}>{movie.title}</h4>
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "7px",
+                        }}
+                      >
+                        <h7>
+                          {movie.director.map(
+                            (name, i) =>
+                              " " +
+                              name +
+                              (i < movie.director.length - 1 ? "," : "")
+                          )}
+                        </h7>
+                        <br />
+                        <br />
+                        <h12>
+                          {movie.cast.map(
+                            (name, i) =>
+                              " " +
+                              name +
+                              (i < movie.cast.length - 1 ? "," : "")
+                          )}
+                        </h12>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </OutsideClickHandler>
   );
 };
 

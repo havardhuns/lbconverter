@@ -24,6 +24,8 @@
     "react-infinite-scroller": "^1.2.4",
     "react-loading": "^2.0.3",
     "react-native-custom-checkbox": "^1.1.0",
+    "react-onclickoutside": "^6.10.0",
+    "react-outside-click-handler": "^1.3.0",
     "react-paginate": "^6.3.2",
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.2.0",
