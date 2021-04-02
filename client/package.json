@@ -13,6 +13,7 @@
     "material-icons-react": "^1.0.4",
     "npm": "^6.14.11",
     "onscrolling": "^1.0.0",
+    "prettier": "^2.2.1",
     "rarbg-api": "^1.1.4",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.14",
