@@ -33,3 +33,13 @@ export function getProductionCompanies() {
       });
   };
 }
+
+export const updateQuery = (query) => ({
+  type: "UPDATE_QUERY",
+  payload: query,
+});
+
+export const removeFromQuery = (key) => ({
+  type: "REMOVE_FROM_QUERY",
+  key: key,
+});

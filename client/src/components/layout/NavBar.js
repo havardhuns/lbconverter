@@ -1,10 +1,15 @@
 import MovieSearch from "./MovieSearch";
 import LbFilter from "./LbFilter";
 import Logo from "./Logo";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentRoute } from "../../store/actions/routerAction";
+import React, { useEffect, useState } from "react";
 
 const NavBar = () => {
   let history = useHistory();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
   const redirect = (path) => {
     if (history.location.pathname === path) {
@@ -13,6 +18,10 @@ const NavBar = () => {
       history.push(path);
     }
   };
+
+  useEffect(() => {
+    dispatch(setCurrentRoute(location.pathname));
+  });
 
   return (
     <div style={style.navbar}>

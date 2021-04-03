@@ -2,18 +2,42 @@ import json
 import requests
 import pymongo
 from imdb import IMDb
+import os
+import requests
+from requests_html import HTMLSession
 
 imdb = IMDb()
-client = pymongo.MongoClient(os.environ.get("DB_CONNECTION"))
+client = pymongo.MongoClient("mongodb+srv://havardhuns:dbpw@cluster0.iimwb.azure.mongodb.net/movieFilter?retryWrites=true&w=majority")
 db = client["movieFilter"]
-dbList = db["movieList"]
+dbList = db["movieList2"]
 dbGenres = db["genres"]
 dbCompanies = db["companies"]
 
-addedMoviesFile = open("addedMovies.txt", "r+")
+addedMoviesFile = open("addedMovies.txt", "a+")
 addedMoviesListFromFile = addedMoviesFile.read().splitlines()
 
 apiKey = "52054b86a7c38893bedfad2b6e189d8c"
+
+parents_guide_options = ["None", "Mild", "Moderate", "Severe"]
+
+def getSpanWithinId(response, id):
+	div = response.html.find(id)[0]
+	severity = div.find('span')[0].text
+	if severity in parents_guide_options:
+		return severity
+	else:
+		return "unknown"
+
+def getParentsGuide(imdbId):
+	parentsGuide = {}
+	session = HTMLSession()
+	response = session.get(f'https://www.imdb.com/title/{imdbId}/parentalguide') 
+	parentsGuide["nudity"] = getSpanWithinId(response, "#advisory-nudity")
+	parentsGuide["violence"] = getSpanWithinId(response, "#advisory-violence")
+	parentsGuide["profanity"] = getSpanWithinId(response, "#advisory-profanity")
+	parentsGuide["alcohol"] = getSpanWithinId(response, "#advisory-alcohol")
+	parentsGuide["frightening"] = getSpanWithinId(response, "#advisory-frightening")
+	return parentsGuide
 
 def clearDatabase():
 	dbList.delete_many({})
@@ -78,6 +102,7 @@ def getMovieFromID(id):
 	releaseDates = movie["release_dates"]
 	movie["certifications"] = getNorwegianCertification(releaseDates, imdbMovie)
 	movie["director"] = getDirector(imdbMovie)
+	movie["imdb_parents_guide"] = getParentsGuide(movie["imdb_id"])
 	if "rating" in imdbMovie:
 		movie["rating"] = imdbMovie["rating"]
 	else: 
@@ -89,7 +114,7 @@ def getMovieFromID(id):
 	movie["cast"] = getTopCast(imdbMovie, 3)
 	############
 	keys = ["id", "title", "poster_path", "backdrop_path", "release_date", "imdb_id", "budget", "genres", "original_language",
-    "original_title", "overview", "popularity", "revenue", "runtime", "status", "tagline", "certifications", "director", "rating", "votes", "production_companies", "cast"]
+    "original_title", "overview", "popularity", "revenue", "runtime", "status", "tagline", "certifications", "director", "rating", "votes", "production_companies", "cast", "imdb_parents_guide"]
 	movie = {key: movie[key] for key in keys}
 	movie["_id"] = movie.pop("id")
 	############
@@ -163,5 +188,5 @@ def insertProductionCompanies():
 #dbGenres.delete_many({})
 #insertGenres()
 #dbCompanies.delete_many({})
-#insertMovies(1849, 2020)
-insertProductionCompanies()
+insertMovies(1849, 2020)
+#insertProductionCompanies()

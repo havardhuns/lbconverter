@@ -9,14 +9,8 @@ import { getMovies } from "../../store/actions/MovieListAction";
 const LbFilter = (props) => {
   const lbMovies = useSelector((state) => state.lbMovies.lbMovies);
   const checked = useSelector((state) => state.lbMovies.checked);
+  const query = useSelector((state) => state.filters.query);
   const dispatch = useDispatch();
-
-  const getFrontPageMovies = (check) =>
-    dispatch(
-      getMovies(1, check, {
-        votes: { $gt: 25000 },
-      })
-    );
 
   return (
     <div
@@ -57,7 +51,7 @@ const LbFilter = (props) => {
             size="3"
             onChange={(isChecked) => {
               dispatch(setChecked(isChecked));
-              getFrontPageMovies(isChecked);
+              dispatch(getMovies(1, isChecked, query));
             }}
           />
         </div>

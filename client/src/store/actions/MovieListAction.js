@@ -19,8 +19,15 @@ export const setSearchSuggestion = (movieList) => ({
   payload: movieList,
 });
 
+export const clearMovies = () => ({
+  type: "CLEAR_MOVIES",
+});
+
 export function getMovies(page, hideWatched, filter = {}) {
   return (dispatch) => {
+    if (page === 1) {
+      dispatch(clearMovies());
+    }
     dispatch(getMoviesBegin());
     fetch(
       "/api/movies?page=" +
