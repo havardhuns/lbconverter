@@ -34,6 +34,7 @@ const MovieSearch = () => {
     (state) => state.movieList.searchSuggestions
   );
   const checked = useSelector((state) => state.lbMovies.checked);
+  const query = useSelector((state) => state.filters.query);
 
   const [currentTextInput, setCurrentTextInput] = useState("");
   const [hoverIndex, setHoverIndex] = useState(-1);
@@ -45,16 +46,10 @@ const MovieSearch = () => {
     if (currentTextInput !== "") {
       dispatch(search(currentTextInput));
     } else {
-      getFrontPageMovies();
+      dispatch(getMovies(1, checked, query));
     }
   };
 
-  const getFrontPageMovies = () =>
-    dispatch(
-      getMovies(1, checked, {
-        votes: { $gt: 25000 },
-      })
-    );
   const keyPress = (e) => {
     if (e.keyCode === 13) {
       getMoviesFromInput();
@@ -67,8 +62,6 @@ const MovieSearch = () => {
       dispatch(getSearchSuggestions(String(event.target.value)));
     }
   };
-
-  MovieSearch.handleClickOutside = () => console.log("outside");
 
   return (
     <OutsideClickHandler

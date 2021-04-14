@@ -12,7 +12,7 @@ const MovieList = () => {
   };
 
   return (
-    <div style={{ width: "80%", margin: "0 20px" }}>
+    <div style={{ width: "80%", marginBottom: "20px" }}>
       <Grid container spacing={1}>
         {movieList.map((movie, i) => {
           return (

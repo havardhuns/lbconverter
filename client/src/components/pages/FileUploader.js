@@ -34,7 +34,9 @@ const FileUploader = (props) => {
 
   const uploadFile = () => {
     dispatch(upload(file));
-    history.push("/");
+    setTimeout(() => {
+      history.push("/");
+    }, 500);
   };
 
   useEffect(() => {
@@ -61,7 +63,9 @@ const FileUploader = (props) => {
           <label htmlFor="contained-button-file">
             <FileDrop
               onDrop={handleDrop}
-              className={file ? "file-drop-no-click" : "file-drop"}
+              className={
+                file || lbMovies.length > 0 ? "file-drop" : "file-drop-no-click"
+              }
             >
               <div style={style.center}>
                 {!(file || lbMovies.length > 0) ? (
@@ -161,7 +165,7 @@ const style = {
     height: "24px",
     borderRadius: "24px",
     textAlign: "center",
-    lineHeight: "36px",
+    lineHeight: "38px",
     border: "2px solid white",
   },
   fileIcon: {

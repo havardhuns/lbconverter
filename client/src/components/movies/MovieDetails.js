@@ -1,7 +1,10 @@
 import Modal from "@material-ui/core/Modal";
 import TorrentList from "./TorrentList.js";
+import React, { useState } from "react";
 
 const MovieDetails = (props) => {
+  const [showTorrentList, setShowTorrentList] = useState(false);
+
   return (
     <div
       style={{
@@ -58,7 +61,13 @@ const MovieDetails = (props) => {
                 </h3>
                 <h3 style={{ color: "white" }}>{props.movie.tagline}</h3>
                 <h3>{props.movie.overview}</h3>
-                <TorrentList imdbId={props.movie.imdb_id} />
+                {!showTorrentList ? (
+                  <div onClick={() => setShowTorrentList(true)}>
+                    show torrents
+                  </div>
+                ) : (
+                  <TorrentList imdbId={props.movie.imdb_id} />
+                )}
               </div>
             </div>
           </div>

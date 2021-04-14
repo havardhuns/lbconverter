@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import MovieList from "../movies/MovieList";
 import MovieDetails from "../movies/MovieDetails.js";
 import Paginator from "../movies/Paginator.js";
+import ParentsGuideSliders from "../filters/ParentsGuideSliders";
 import {
   getGenres,
   getProductionCompanies,
@@ -21,26 +22,23 @@ const Home = () => {
   const numberOfPages = useSelector((state) => state.movieList.numberOfPages);
   const movieDetails = useSelector((state) => state.movie.movieDetails);
   const checked = useSelector((state) => state.lbMovies.checked);
+  const query = useSelector((state) => state.filters.query);
 
   const dispatch = useDispatch();
-
-  const getFrontPageMovies = () =>
-    dispatch(
-      getMovies(1, checked, {
-        votes: { $gt: 25000 },
-      })
-    );
 
   const openMovie = (movie) => {
     dispatch(getMovieDetails(movie));
   };
 
   useEffect(() => {
-    getFrontPageMovies();
     dispatch(getLbMovies());
     dispatch(getGenres());
     dispatch(getProductionCompanies());
   }, []);
+
+  useEffect(() => {
+    dispatch(getMovies(1, checked, query));
+  }, [query]);
 
   return (
     <div
@@ -50,14 +48,18 @@ const Home = () => {
         flexDirection: "column",
       }}
     >
-      {!movieList.loading ? (
-        <MovieList movies={movieList.movieList} onClick={openMovie} />
-      ) : (
+      {movieList.loading && movieList.movieList.length === 0 ? (
         <div style={{ marginTop: 200 }}>
           <CircularProgress />
         </div>
+      ) : (
+        <MovieList movies={movieList.movieList} onClick={openMovie} />
       )}
-      {numberOfPages > 0 && <Paginator pages={numberOfPages} />}
+      <div style={{ height: "60px" }}>
+        {movieList.loading && movieList.movieList.length > 0 && (
+          <CircularProgress />
+        )}
+      </div>
       {movieDetails._id && (
         <MovieDetails
           movie={movieDetails}

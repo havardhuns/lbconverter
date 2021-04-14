@@ -4,6 +4,7 @@ import movie from "./movieDetailsReducer";
 import torrentList from "./torrentReducer";
 import lbMovies from "./lbDataReducer";
 import filters from "./filterReducer";
+import route from "./routerReducer";
 
 const rootReducer = combineReducers({
   movieList,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   torrentList,
   lbMovies,
   filters,
+  route,
 });
 
 export default rootReducer;
