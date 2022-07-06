@@ -9,7 +9,7 @@ idna==2.10
 IMDbPY==2020.9.25
 itsdangerous==1.1.0
 Jinja2==2.11.3
-lxml==4.6.3
+lxml==4.9.1
 MarkupSafe==1.1.1
 pymongo==3.11.3
 python-dotenv==0.16.0
